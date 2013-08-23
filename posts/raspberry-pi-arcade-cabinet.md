@@ -20,7 +20,7 @@ The next step for me was to configure the joystick from my arcade cabinet. My or
 
 (**Side note**: I had no soldering skills at the time I completed this project, so I hand-rolled, crimped, and daisy chained wires together for 33 buttons and 4 joysticks. My fingers had blisters for days. I wouldn't recommend it to anyone else, but I'm glad I did it!)
 
-My iPac4 has an old-school PS/2 connector, but the Raspberry Pi is unsurprisingly USB-only. I bought a PS/2-to-USB adapter, which worked out of the box. The main emulation engine in RetroPie is RetroArch + libretro. The default configuration for the iPac4 has a few mysterious button choices that RetroArch doesn't support, so I had to download the [WinIPAC Interactive Panel Designer](http://www.ultimarc.com/download.html) to update my configuration. (The OSX implementation is hopelessly out of date and only runs on PowerPC. I didn't try the Linux utility because I had a Windows machine available and had used the Windows version before.)
+My I-PAC4 USB adapter, which worked out of the box. The main emulation engine in RetroPie is RetroArch + libretro. The default configuration for the iPac4 has a few mysterious button choices that RetroArch doesn't support, so I had to download the [WinIPAC Interactive Panel Designer](http://www.ultimarc.com/download.html) to update my configuration. (The OSX implementation is hopelessly out of date and only runs on PowerPC. I didn't try the Linux utility because I had a Windows machine available and had used the Windows version before.)
 
 ## Check paths below   vv
 

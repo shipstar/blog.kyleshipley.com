@@ -1,3 +1,6 @@
-for post, slug in public.posts.data
-  a(href="/posts/#{ slug }")
-    h2= post.title
+h2 Blog Posts
+ul
+  for post, slug in public.posts.data
+    li
+      span= post.data
+      a(href="/posts/#{slug}")= post.title
