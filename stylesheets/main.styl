@@ -14,6 +14,7 @@ html
 
 body
   font-family: "Lato", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif
+  font-size: 16px
 
 h1, h2, h3, h4, h5, h6
   font-family: "Abel", "Georgia", "Times New Roman", serif
@@ -44,24 +45,33 @@ p
     .bio
       text-align: left
 
-.posts
-  .date
-    display: inline-block
-    width: 100px
-
 .content
   padding-top: 25px
 
+.posts
+  .date
+    display: inline-block
+    width: 120px
+
+.post
   .length
     i
       margin-right: 5px
     color: #888
+
+  p.image
+    text-align: center
+
+    img
+      border: 1px solid #ccc
+      box-shadow: 1px 1px 7px -1px #ccc
 
   pre
     width: 95%
     padding: 2%
     background: #eee
     border: 1px solid #9ee9ec
+    border-radius: 5px
     overflow-x: scroll
     font-family: monaco, courier, monospace
     font-size: 13px

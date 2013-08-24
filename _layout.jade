@@ -24,6 +24,8 @@ html
     link(rel="apple-touch-icon", sizes="114x114", href="/images/apple-touch-icon-114x114.png")
 
   body
+    - contentClass = current.path[0] == "posts" ? "post" : ""
+
     .container
       .four.columns.sidebar
         nav
@@ -38,7 +40,7 @@ html
             p I'm <a href="https://twitter.com/kyleashipley">@kyleashipley</a>.
             p I <a href="https://github.com/shipstar">write code</a>, usually in Ruby or CoffeeScript.
             p I also run experiments at <a href="http://refoundry.co">Refoundry.co</a>.
-      .eleven.columns.content
+      .eleven.columns.content(class=contentClass)
 
         if current.path[0] == "posts"
           != partial("posts/_time.jade", { timeToRead: timeToRead })
