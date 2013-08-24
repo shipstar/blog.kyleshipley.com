@@ -27,11 +27,16 @@ html
     .container
       .four.columns.sidebar
         nav
-          h2.home
+          h2.brand
             a(href="/")
-              | Profanity
-              &
-              | Profundity
+              | Profanity & Profundity
           h5 Mostly the latter
+
+        .info
+          img.avatar(src="/images/kyle.jpeg")
+          .bio
+            p I'm <a href="https://twitter.com/kyleashipley">@kyleashipley</a>.
+            p I <a href="https://github.com/shipstar">write code</a>, usually in Ruby or CoffeeScript.
+            p I also run experiments at <a href="http://refoundry.co">Refoundry.co</a>.
       .eleven.columns.content
         != yield

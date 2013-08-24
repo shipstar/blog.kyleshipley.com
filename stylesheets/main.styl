@@ -4,6 +4,13 @@
 @import "skeleton.css"
 @import "prism.css"
 
+*
+  box-sizing: border-box
+
+html
+  border-left: 7px solid #9c0034
+  min-height: 100%
+
 body
   font-family: "Lato", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif
 
@@ -19,6 +26,27 @@ p
 
 .sidebar
   padding-top: 25px
+
+  .info
+    position: relative
+    left: -20px
+    margin-top: 30px
+    padding: 10px 20px
+    background-color: #eee
+    border-radius: 10px
+    text-align: center
+
+    .avatar
+      margin-bottom: 10px
+      border-radius: 50%
+
+    .bio
+      text-align: left
+
+.posts
+  .date
+    display: inline-block
+    width: 100px
 
 .content
   padding-top: 25px

@@ -1,6 +1,6 @@
 h2 Blog Posts
-ul
+ul.posts
   for post, slug in public.posts.data
     li
-      span= post.data
+      span.date= post.date
       a(href="/posts/#{slug}")= post.title
