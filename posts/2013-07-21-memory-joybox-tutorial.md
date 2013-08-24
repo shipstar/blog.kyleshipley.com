@@ -4,7 +4,9 @@ Earlier this year, RubyMotion had its [inaugural conference](http://www.rubymoti
 
 Looking for an excuse to play with my RubyMotion license, I decided to dive into Joybox. It's a very new framework, so there's definitely some dragons here, but creator [Juan Karam](https://github.com/CurveBeryl) and his team are actively improving it. (And it's open-source, so you can help improve it too!) There are a few [official examples](https://github.com/CurveBeryl/Joybox-Examples) available, but I wanted to go a little deeper and understand how to put all the pieces together. I decided to put together a tutorial for a simple Memory game to help other beginners get started.
 
-![](https://dl.dropbox.com/s/yjnc98eic2wsmej/final.png)
+<p class="image iphone">
+  ![](https://dl.dropbox.com/s/yjnc98eic2wsmej/final.png)
+</p>
 
 I'm going to assume that readers are familiar with Ruby and basic game development terminology. Let me know in the comments if I need to dive deeper on something!
 
@@ -43,7 +45,9 @@ Nothing too fancy here. It creates an app_delegate, which is the entry point to 
 
 Make sure you're in good shape by running `rake`. If all is well, you should see the following:
 
-![](https://dl.dropbox.com/s/ywfh019ukqjzni8/blank.png)
+<p class="image iphone">
+  ![](https://dl.dropbox.com/s/ywfh019ukqjzni8/blank.png)
+</p>
 
 Not too exciting, but it's a start!
 
@@ -147,7 +151,9 @@ This works well for small numbers of sprites. When you're dealing with lots of s
 
 If you've done any game development before, you've probably seen sprite sheets. Here's an example from Prince of Persia:
 
-![](https://dl.dropbox.com/s/gn85jq0rcgnchau/prince_of_persia.gif)
+<p class="image">
+  ![](https://dl.dropbox.com/s/gn85jq0rcgnchau/prince_of_persia.gif)
+</p>
 
 Basically, you load every frame from this sprite sheet into your game, then just tell the game which frame to draw for standing, running, jumping, fighting, and so on.
 
@@ -188,7 +194,9 @@ This will look up the frame called 'boy.png' in the .plist file, find the associ
 
 Run `rake`. Your screen should look like the following:
 
-![](https://dl.dropbox.com/s/gy5eynsip69etg4/boy_center.png)
+<p class="image iphone">
+  ![](https://dl.dropbox.com/s/gy5eynsip69etg4/boy_center.png)
+</p>
 
 He's cute, but he's a little lonely by himself. Let's add a couple friends for him. At the end of `on_enter`:
 
@@ -198,7 +206,9 @@ He's cute, but he's a little lonely by himself. Let's add a couple friends for h
 
 If we run `rake` again, we'll see:
 
-![](https://dl.dropbox.com/s/z6g9cmjghhigcdj/friends_corners.png)
+<p class="image iphone">
+  ![](https://dl.dropbox.com/s/z6g9cmjghhigcdj/friends_corners.png)
+</p>
 
 This is a good time to explain the coordinate system in Joybox/Cocos2d. If you've done graphics work before, you might be surprised that the origin (0,0) is in the lower left, not the top left. If you have a REPL open, try entering the following commands:
 
@@ -300,7 +310,9 @@ Perfect!
 
 Run `rake` again, and you should see the following screen:
 
-![](https://dl.dropbox.com/s/6pfn2njsriujnmz/grid_blank.png)
+<p class="image iphone">
+  ![](https://dl.dropbox.com/s/6pfn2njsriujnmz/grid_blank.png)
+</p>
 
 Before we move on, let's do a little bit of cleanup. You might have noticed a couple magic numbers above (64 and 128). Our tiles are 64x64, so the `row * 64` and `column * 64` is probably referring to the size of each tile. Let's add a constant called `TILE_SIZE` and set it to `64`.
 
@@ -441,7 +453,9 @@ Let's add a simple `flip` method to our Tile class and call that instead of prin
 
 Run `rake` and try tapping on your tiles. You should see them scale up to 150% of their size over 0.2 seconds, then shrink back to normal.
 
-![](https://dl.dropbox.com/s/wuembr8migvv5s7/flip_basic.png)
+<p class="image iphone">
+  ![](https://dl.dropbox.com/s/wuembr8migvv5s7/flip_basic.png)
+</p>
 
 Notice that Scale is absolute, not relative, as in the following example:
 
@@ -533,7 +547,9 @@ The last step here is to use the Tile's type to change which image is showing du
 
 Go ahead and run `rake` again. We can actually flip our tiles over now!
 
-![](https://dl.dropbox.com/s/t6vpl1agkg9x65h/flip_tiles.png)
+<p class="image iphone">
+  ![](https://dl.dropbox.com/s/t6vpl1agkg9x65h/flip_tiles.png)
+</p>
 
 Well, that about wraps it up. Now, we'll just…
 
@@ -791,7 +807,9 @@ We'll also need to identify the victory condition so we can display this Scene. 
  
 Add an `attr_reader :frozen` to your Tile class, then give it a `rake`. Play through your game until you win, then enjoy your victory:
 
-![](https://dl.dropbox.com/s/913141kopkxwxa2/you_win.png)
+<p class="image iphone">
+  ![](https://dl.dropbox.com/s/913141kopkxwxa2/you_win.png)
+</p>
 
 Yes, you certainly do.
 

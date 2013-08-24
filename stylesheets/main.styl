@@ -62,9 +62,10 @@ p
   p.image
     text-align: center
 
-    img
-      border: 1px solid #ccc
-      box-shadow: 1px 1px 7px -1px #ccc
+    &:not(.iphone)
+      img
+        border: 1px solid #ccc
+        box-shadow: 1px 1px 7px -1px #ccc
 
   pre
     width: 95%
