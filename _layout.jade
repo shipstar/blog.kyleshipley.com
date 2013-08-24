@@ -39,4 +39,8 @@ html
             p I <a href="https://github.com/shipstar">write code</a>, usually in Ruby or CoffeeScript.
             p I also run experiments at <a href="http://refoundry.co">Refoundry.co</a>.
       .eleven.columns.content
+
+        if current.path[0] == "posts"
+          != partial("posts/_time.jade")
+
         != yield

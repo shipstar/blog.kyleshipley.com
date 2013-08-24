@@ -1,7 +1,5 @@
 # The 4-Player Raspberry Pi Arcade Cabinet
 
-#### This is a long one! 15 min.
-
 ## picture of cabinet
 
 Back in college, I built a stand-up 4-player arcade cabinet that I egomaniacally dubbed "The Shipstravaganza." It was one of the few major physical projects I've undertaken, and I couldn't have accomplished it without help from a couple of friends. Inside the cabinet sat a Frankenstein PC I built from spare parts: an AMD Athlon 2900+ engineering chip I got from a friend and 512MB of RAM. It was slightly underpowered at the time, but it was *just* powerful enough to play older MAME ROMs, along with NES, SNES, Genesis, and more.
