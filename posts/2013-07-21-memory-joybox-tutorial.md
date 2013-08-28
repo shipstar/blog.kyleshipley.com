@@ -820,3 +820,5 @@ I hope you've enjoyed this whirlwind tour through Joybox. There's obviously lots
 There are many ways you could grow this tutorial: adding more rows/columns, keeping track of the number of moves, adding a timer, and so on. Feel free to share your hacks and extensions back to the [Joybox Google Group]((https://groups.google.com/forum/#!forum/joybox-wrapper) or to me directly.
 
 I'm looking forward to seeing some cool games built with Joybox. Happy coding!
+
+You can find me on [Twitter](https://twitter.com/kyleashipley) if you have any feedback.
