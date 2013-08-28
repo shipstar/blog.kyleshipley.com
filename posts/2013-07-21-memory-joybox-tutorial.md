@@ -477,7 +477,7 @@ Our flip animation is a start, but we actually need to change the image that's s
 
 In case you don't remember every % construct in Ruby, %w creates an array of strings:
 
-    > %w(foo bar baz)
+    (main)> %w(foo bar baz)
     => ["foo", "bar", "baz"]
 
 Let's go ahead and allow a :type parameter to be passed into our Tile constructor:
@@ -505,12 +505,12 @@ Once we've done that, we want to create pairs of tiles:
 
 In Ruby, if you multiply an Array by a number `n`, it creates a new array with each element appearing `n` times. So:
 
-    > [1,2,3] * 2
+    (main)> [1,2,3] * 2
     => [1, 2, 3, 1, 2, 3]
 
 In our case, we'll end up with something like:
 
-    > types = 8.times.map { Tile::TYPES.sample } * 2
+    (main)> types = 8.times.map { Tile::TYPES.sample } * 2
     => ["star", "girl_pink", "star", "gem_blue",
         "star", "boy", "key", "girl_cat",
         "star", "girl_pink", "star", "gem_blue",

@@ -13,7 +13,7 @@ html
     meta(name="viewport", content="width=device-width, initial-scale=1, maximum-scale=1")
 
     link(rel="stylesheet", href="/stylesheets/main.css")
-    script(src="/javascripts/prism.js")
+    script(src="/javascripts/prism.js", data-manual)
     script(src="/javascripts/prism-ruby.js")
 
     // [if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]
@@ -46,3 +46,14 @@ html
           != partial("posts/_time.jade", { timeToRead: timeToRead })
 
         != yield
+
+    script.
+      // Possibly hyper-aggressive Ruby highlighting.
+      var codeBlocks = document.getElementsByTagName("code");
+      for (var i = 0; i < codeBlocks.length; i++) {
+        var block = codeBlocks[i];
+        if (block.textContent.match(/def\b|\.rb|@\w*\b|\(main\)|\bend\b|[A-Z]\w*\.new/)) {
+          block.className += "language-ruby";
+        }
+      };
+      Prism.highlightAll();
