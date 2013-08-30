@@ -1,13 +1,14 @@
 {
-  "2013-08-23-raspberry-pi-arcade-cabinet": {
+  "2013-08-29-raspberry-pi-arcade-cabinet": {
     "title": "The 4 Player Raspberry Pi Arcade Cabinet",
-    "date": "Aug 22, 2013",
-    "timeToRead": 10
+    "date": "Aug 29, 2013",
+    "timeToRead": 5
   },
 
   "2013-07-21-memory-joybox-tutorial": {
     "title": "Memory: A Joybox Tutorial",
     "date": "Jul 21, 2013",
-    "timeToRead": 45
+    "timeToRead": 15,
+    "timeToFollow": 60
   }
 }

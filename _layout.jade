@@ -43,7 +43,7 @@ html
       .eleven.columns.content(class=contentClass)
 
         if current.path[0] == "posts"
-          != partial("posts/_time.jade", { timeToRead: timeToRead })
+          != partial("posts/_time.jade", { timeToRead: locals.timeToRead, timeToFollow: locals.timeToFollow })
 
         != yield
 

@@ -1,3 +1,7 @@
 .length
   i.icon-time
-  | #{timeToRead} min read
+  | #{timeToRead} min to read
+if timeToFollow
+  .length
+    i.icon-time
+    | #{timeToFollow} min to follow along
