@@ -47,7 +47,13 @@ html
               | <a href="https://www.ourhealth.org/about-us/careers/#jobs">currently hiring</a>.
       .eleven.columns.content(class=contentClass)
 
+
+
         if current.path[0] == "posts"
+          a(href='/') < Home
+          br
+          br
+          .date= locals.date
           != partial("posts/_time.jade", { timeToRead: locals.timeToRead, timeToFollow: locals.timeToFollow })
 
         != yield
