@@ -1,0 +1,643 @@
+<!-- [if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]--><!-- [if IE 7 ]><html class="ie ie7" lang="en"> <![endif]--><!-- [if IE 8 ]><html class="ie ie8" lang="en"> <![endif]--><!-- [if (gte IE 9)|!(IE)]><html lang="en"> <![endif]--><html><head><meta charset="utf-8"/><title>Profanity and Profundity - Kyle Shipley's Blog</title><meta name="description" content=""/><meta name="author" content="Kyle Shipley"/><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/><link rel="stylesheet" href="/stylesheets/main.css"/><script src="/javascripts/prism.js" data-manual="data-manual"></script><script src="/javascripts/prism-ruby.js"></script><!-- [if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]--><link rel="shortcut icon" href="/images/favicon.ico"/><link rel="apple-touch-icon" href="/images/apple-touch-icon.png"/><link rel="apple-touch-icon" sizes="72x72" href="/images/apple-touch-icon-72x72.png"/><link rel="apple-touch-icon" sizes="114x114" href="/images/apple-touch-icon-114x114.png"/></head><body><div class="container"><div class="four columns sidebar"><nav><h2 class="brand"><a href="/">Profanity & Profundity</a></h2><h5>Mostly the former</h5></nav><div class="info"><img src="/images/kyle.jpeg" class="avatar"/><div class="bio"><p>I'm <a href="https://twitter.com/kyleashipley">@kyleashipley</a>.</p><p>I <a href="https://github.com/shipstar">write code</a>, usually
+in Ruby or JavaScript, and very infrequently words at this site.</p><p>You will find me at <a href="http://www.ourhealth.org">OurHealth</a>
+these days as the Head of Product & Engineering. We are doing
+Neat Stuff™ in healthcare and are
+<a href="https://www.ourhealth.org/about-us/careers/#jobs">currently hiring</a>.</p></div></div></div><div class="eleven columns content post"><a href="/">< Home</a><br/><br/><div class="date">Jul 21, 2013</div><div class="length"><i class="icon-time"></i>15 min to read</div><div class="length"><i class="icon-time"></i>60 min to follow along</div><h1>Memory: A Joybox Tutorial</h1><p>Earlier this year, RubyMotion had its <a href="http://www.rubymotion.com/conference/">inaugural conference</a>, and with it came the first RubyMotion game development framework, <a href="http://joybox.io/">Joybox</a>. Joybox is a wrapper around popular iOS game development libraries <a href="http://cocos2d.org/">Cocos2D</a> and <a href="http://box2d.org/">Box2D</a>. Cocos2D handles sprite drawing, movement, touch events, and simple collisions, while Box2D focuses on more complex physics simulations. (Think Angry Birds.)</p>
+<p>Looking for an excuse to play with my RubyMotion license, I decided to dive into Joybox. It&#39;s a very new framework, so there&#39;s definitely some dragons here, but creator <a href="https://github.com/CurveBeryl">Juan Karam</a> and his team are actively improving it. (And it&#39;s open-source, so you can help improve it too!) There are a few <a href="https://github.com/CurveBeryl/Joybox-Examples">official examples</a> available, but I wanted to go a little deeper and understand how to put all the pieces together. I decided to put together a tutorial for a simple Memory game to help other beginners get started.</p>
+<p class="image iphone">
+  <img src="https://dl.dropbox.com/s/yjnc98eic2wsmej/final.png" alt="">
+</p>
+
+<p>I&#39;m going to assume that readers are familiar with Ruby and basic game development terminology. Let me know in the comments if I need to dive deeper on something!</p>
+<p>If you have any questions or run into any issues with Joybox, feel free to post to the <a href="https://groups.google.com/forum/#!forum/joybox-wrapper">Google Group</a>. Juan has been very responsive to questions so far, and we&#39;d love to see more people using the framework!</p>
+<p>The completed source for this tutorial is available <a href="https://github.com/shipstar/memory">here</a>.</p>
+<h2>Prerequisites</h2><p>In order to complete this tutorial, you&#39;ll need the following installed on your machine:</p>
+<ol>
+<li>XCode</li>
+<li>Ruby (&gt;= 1.9)</li>
+<li>RubyMotion</li>
+<li>Joybox</li>
+</ol>
+<p>If everything is installed correctly, you should be able to complete the <a href="http://www.rubymotion.com/developer-center/guides/getting-started/#_ios">Hello World</a> step from the RubyMotion instructions and the <a href="http://joybox.io/">Getting Started</a> step from the Joybox instructions.</p>
+<h2>Getting Started</h2><p>Let&#39;s go ahead and create a new project for our awesome Memory game:</p>
+<pre><code>motion create --template=joybox-ios memory_tutorial
+
+=&gt; Create memory_tutorial
+Create memory_tutorial/app/app_delegate.rb
+Create memory_tutorial/Rakefile
+Create memory_tutorial/resources/Default-568h@2x.png
+Create memory_tutorial/resources/fps_images-hd.png
+Create memory_tutorial/resources/fps_images-ipadhd.png
+Create memory_tutorial/resources/fps_images.png
+Create memory_tutorial/spec/main_spec.rb
+</code></pre><p>Nothing too fancy here. It creates an app_delegate, which is the entry point to an iOS app, a Rakefile for RubyMotion, a few default images, and a test stub. I&#39;m not going to do any testing in this tutorial, but I might cover this topic in the future.</p>
+<p>Make sure you&#39;re in good shape by running <code>rake</code>. If all is well, you should see the following:</p>
+<p class="image iphone">
+  <img src="https://dl.dropbox.com/s/ywfh019ukqjzni8/blank.png" alt="">
+</p>
+
+<p>Not too exciting, but it&#39;s a start!</p>
+<h3>Bundler</h3><p>Because Joybox is so new, there&#39;s lots of bug fixes and improvements happening in master that don&#39;t immediately get cut into a gem. I&#39;m going to use a few of these improvements, so let&#39;s take advantage of <a href="http://bundler.io/">Bundler</a> here. Bundler is a dependency manager for Ruby that helps you maintain some sanity in your environment.</p>
+<p>If you don&#39;t already have it installed, take a couple minutes to familiarize yourself with it, then run:</p>
+<pre><code>gem install bundler
+</code></pre><p>Next, we need a <code>Gemfile</code> with the following:</p>
+<pre><code>source &#39;https://rubygems.org
+
+gem &#39;joybox&#39;, github: &#39;rubymotion/Joybox&#39;
+</code></pre><p>Run <code>bundle install</code> then <code>rake</code> one more time to make sure everything is in order.</p>
+<h3>app_delegate.rb</h3><p>Let&#39;s take a quick look at the app_delegate file to understand what Joybox did on our behalf.</p>
+<p>In Joybox, there is an object called the director that is responsible for controlling the game loop itself. It handles things like double-buffered drawing, pausing, resuming, and so on. The Joybox iOS template fills in our app delegate with basic handling for these cases, so we can focus on the core game logic.</p>
+<p>There&#39;s nothing too fancy in here, so we&#39;ll keep moving.</p>
+<h2>Core Classes</h2><p>There are four main classes that we&#39;ll need to familiarize ourselves with for this tutorial:</p>
+<ul>
+<li><p>Sprite</p>
+<p>Sprites represent most interactive objects in a game. Player characters, enemies, power-ups, bricks, and walls are all examples of things that a sprite can represent. In Joybox, sprites contain information about what to draw (the image file), where to draw it, and how to react to collisions, among other things.</p>
+<p>In our simple memory game, we won&#39;t deal with collisions and more complex features of sprites, but know that they&#39;re available. There&#39;s a basic collisions example called Gorillas in the <a href="https://github.com/CurveBeryl/Joybox-Examples">Joybox-Examples</a> repository on GitHub.</p>
+<p>The Sprite class is intended to be subclassed in Joybox. We&#39;ll see an example of how to subclass later in the tutorial.</p>
+</li>
+<li><p>Layer</p>
+<p>Layers manage drawing and user interactions. Layers have two main methods: on_enter and on_exit. In on_enter, you tell Joybox which sprites to draw and how to respond to touch actions. We won&#39;t use on_exit in this tutorial because we only have one layer, but it&#39;s where you would clean up touch handlers and sprites if you needed to swap in another layer.</p>
+<p>Like Sprite, Layer is intended to be subclassed, and we&#39;ll take advantage of that in a bit.</p>
+</li>
+<li><p>Scene</p>
+<p>At a high level, scenes represent screens within your game. Examples include your start screen, menu screen, pause screen, cutscenes, level screens, and so on. A scene manages one or more layers.</p>
+<p>Because our scenes are so simple, we&#39;re going to take advantage of a Joybox feature that lets you declare scenes implicitly like so:</p>
+<pre><code>class MyLayer &lt; Joybox::Core::Layer
+  scene
+end
+</code></pre><p>This allows us to instantiate a scene without having to create a really boring class to represent it.</p>
+</li>
+<li><p>Director</p>
+<p>You might be noticing a hierarchy here. Unsurprisingly, the director manages the scenes, which manage the layers, which manage the sprites. We won&#39;t need to do much with the director in this game, but it&#39;s a nice object to have around.</p>
+</li>
+</ul>
+<h2>Adding Our First Layer</h2><p>The first thing we&#39;re going to do is add a layer. In our memory game, our layer will represent the grid of tiles that need to be matched. Let&#39;s create a new layer at <code>app/grid_layer.rb</code> and call it GridLayer. For now, let&#39;s just print something to make sure it works:</p>
+<pre><code># app/grid_layer.rb
+class GridLayer &lt; Joybox::Core::Layer
+  scene
+
+  def on_enter
+    puts &quot;Entering GridLayer...&quot;
+  end
+end
+</code></pre><p>As I mentioned before, we don&#39;t need a full-fledged scene in our game, so we&#39;ll use the implicit scene functionality in GridLayer. Notice that scene is a class method, not an instance method, so we&#39;ll invoke it with <code>GridLayer.scene</code>.</p>
+<p><code>on_enter</code> is a special function that Joybox calls out to during layer construction. This is where we&#39;ll set up most of our sprites and touch handlers, but for now, we&#39;ll just <code>puts</code>.</p>
+<p>The last thing we need to do before we <code>rake</code> is to push the scene when the game starts. Update your AppDelegate to look like the following:</p>
+<pre><code># app/app_delegate.rb
+
+class AppDelegate
+  def application(application, didFinishLaunchingWithOptions:launchOptions)
+    # …
+    @window.makeKeyAndVisible
+
+    @director.push_scene GridLayer.scene
+  end
+end
+</code></pre><p>Run <code>rake</code>. You should see a blank screen still, but in the REPL that comes up when rake finishes compiling the code, you should see &quot;Entering GridLayer…&quot;</p>
+<h2>Holy (Sprite) Sheet!</h2><p>In the Core Classes section, we talked a little bit about sprites. You can instantiate a sprite using the following code:</p>
+<pre><code>sprite = Sprite.new file_name: &#39;my_sprite.png&#39;, position: [10, 10]
+</code></pre><p>This works well for small numbers of sprites. When you&#39;re dealing with lots of sprites, though, it&#39;s better to load them all into memory using a sprite sheet.</p>
+<p>If you&#39;ve done any game development before, you&#39;ve probably seen sprite sheets. Here&#39;s an example from Prince of Persia:</p>
+<p class="image">
+  <img src="https://dl.dropbox.com/s/gn85jq0rcgnchau/prince_of_persia.gif" alt="">
+</p>
+
+<p>Basically, you load every frame from this sprite sheet into your game, then just tell the game which frame to draw for standing, running, jumping, fighting, and so on.</p>
+<p>For this memory game, I decided to use danc&#39;s excellent (free!) tile set called <a href="http://www.lostgarden.com/2007/05/dancs-miraculously-flexible-game.html">PlanetCute</a>. I couldn&#39;t find a great way to resize images within Joybox, which is probably a bad idea anyway, so I reformatted them to be 64x64 images using Pixelmator. I then used <a href="http://www.codeandweb.com/texturepacker">TexturePacker</a> to export the sprites I wanted. TexturePacker is free if you don&#39;t need more advanced filters. I&#39;d recommend you play with it at some point (and make a prettier alternative!), but for now, you&#39;ll just need these two files:</p>
+<p><a href="https://dl.dropbox.com/s/goodlbwfc9pfvdp/sprites.png">sprites.png</a></p>
+<p><a href="https://dl.dropbox.com/s/h5bjs6k4em3a5u5/sprites.plist">sprites.plist</a></p>
+<p>The .png file contains the actual sprite sheet. The .plist file is used by Cocos2d to allow you to say things like &quot;Give me running frame #3&quot; and know that &quot;running frame #3&quot; is at 100, 200 in the .png file and has a height of 50 and a width of 64. It&#39;s just a simple XML file, so take a quick look and make sure I&#39;m a reliable narrator.</p>
+<p>Add these two files to your <code>/resources</code> directory.</p>
+<h2>Can We Draw Something Yet?</h2><p>Now that we have our sprite sheet, we&#39;ll need to load those frames into some Joybox objects. Remove the <code>puts</code>, then add the following to our GridLayer:</p>
+<pre><code># grid_layer.rb
+class GridLayer &lt; Joybox::Core::Layer
+  def on_enter
+    SpriteFrameCache.frames.add file_name: &quot;sprites.plist&quot;
+    @sprite_batch = SpriteBatch.new file_name: &quot;sprites.png&quot;
+    self &lt;&lt; @sprite_batch
+  end
+end
+</code></pre><p>As discussed in the previous section, <code>SpriteFrameCache</code> tracks the location and dimension information within the sprite sheet by using the .plist file, and <code>SpriteBatch</code> loads the actual images into memory.</p>
+<p>We also need to make the layer aware of our <code>SpriteBatch</code> object so we can draw sprites. We do this by adding our <code>SpriteBatch</code> as a child.</p>
+<p>If we ran <code>rake</code> now, we&#39;d still see a black screen, because we&#39;re not actually drawing a <code>Sprite</code>. Let&#39;s add one more line at the end of <code>on_enter</code>:</p>
+<pre><code># grid_layer.rb
+@sprite_batch &lt;&lt; Sprite.new(frame_name: &#39;boy.png&#39;,
+  position: [Screen.half_width, Screen.half_height])
+</code></pre><p>This will look up the frame called &#39;boy.png&#39; in the .plist file, find the associated image, and draw it in the middle of the screen.</p>
+<p>Run <code>rake</code>. Your screen should look like the following:</p>
+<p class="image iphone">
+  <img src="https://dl.dropbox.com/s/gy5eynsip69etg4/boy_center.png" alt="">
+</p>
+
+<p>He&#39;s cute, but he&#39;s a little lonely by himself. Let&#39;s add a couple friends for him. At the end of <code>on_enter</code>:</p>
+<pre><code># grid_layer.rb
+@sprite_batch &lt;&lt; Sprite.new(frame_name: &#39;girl_cat.png&#39;, position: [0, 0])
+@sprite_batch &lt;&lt; Sprite.new(frame_name: &#39;girl_cat.png&#39;, position: [Screen.width - 20, Screen.height - 20])
+</code></pre><p>If we run <code>rake</code> again, we&#39;ll see:</p>
+<p class="image iphone">
+  <img src="https://dl.dropbox.com/s/z6g9cmjghhigcdj/friends_corners.png" alt="">
+</p>
+
+<p>This is a good time to explain the coordinate system in Joybox/Cocos2d. If you&#39;ve done graphics work before, you might be surprised that the origin (0,0) is in the lower left, not the top left. If you have a REPL open, try entering the following commands:</p>
+<pre><code>(main)&gt; Joybox::Common::Screen.width
+=&gt; 320.0
+(main)&gt; Joybox::Common::Screen.height
+=&gt; 480.0
+</code></pre><p>The top right corner of the screen is 320x480 (in pixels) for a non-Retina iPhone. If you&#39;re running your simulator in Retina mode, you may see different results.</p>
+<p>Also notice that the character is <em>centered</em> at the specified point. For example, we only see the top-right quadrant of our Cat Girl at [0,0].</p>
+<h2>Gridlocked</h2><p>Now that we know how to draw some sprites, let&#39;s draw a grid of sprites to represent the tiles in our memory game. But first, let&#39;s do a really simple refactoring in our GridLayer. Remove all the sprite drawing calls, then create a new method called <code>load_sprite_sheet</code>:</p>
+<pre><code># grid_layer.rb
+def on_enter
+  load_sprite_sheet
+end
+
+def load_sprite_sheet
+  SpriteFrameCache.frames.add file_name: &quot;sprites.plist&quot;
+  @sprite_batch = SpriteBatch.new file_name: &quot;sprites.png&quot;
+  self &lt;&lt; @sprite_batch
+end
+</code></pre><p><code>on_enter</code> is going to get bigger, so it makes sense to tidy it up a bit now.</p>
+<p>Next, let&#39;s draw a simple 4x4 grid of empty tiles. There&#39;s a sprite frame called <code>hidden.png</code> in our sprite sheet that we can use to represent an unflipped tile:</p>
+<pre><code># grid_layer.rb
+def on_enter
+  load_sprite_sheet
+  load_tiles
+end
+
+def load_tiles
+  @tiles = 4.times.map do |row|
+    4.times.map do |column|
+      Sprite.new frame_name: &#39;hidden.png&#39;, position: [
+        column * 64 + 64,
+        row * 64 + 128
+      ]
+    end
+  end.flatten
+
+  @tiles.each { |t| @sprite_batch &lt;&lt; t }
+end
+</code></pre><p><code>load_tiles</code> is a little tricky, so let&#39;s walk through it. Basically, we want to create 4 rows and 4 columns. Ruby&#39;s Fixnum class has a handy <code>times</code> method that does exactly what you would think. In the REPL:</p>
+<pre><code>(main)&gt; 4.times { puts &#39;hello&#39; }
+hello
+hello
+hello
+hello
+=&gt; 4
+</code></pre><p>(Notice that it returns the original Fixnum, although that won&#39;t cause us any trouble here.)</p>
+<p>We can chain Ruby&#39;s <code>map</code> operator to collect the results of each trip into the block:</p>
+<pre><code>(main)&gt; 4.times.map { &#39;hello&#39; }
+=&gt; [&quot;hello&quot;, &quot;hello&quot;, &quot;hello&quot;, &quot;hello&quot;]
+</code></pre><p>Again, no surprises.</p>
+<p>One other trick we can use is the fact that times passes a counter into its block:</p>
+<pre><code>(main)&gt; 4.times.map { |i| i }
+=&gt; [0, 1, 2, 3]
+</code></pre><p>Now we have all the building blocks we need to make the method above:</p>
+<pre><code>(main)&gt; 4.times.map do |row|
+(main)&gt;   4.times.map do |column|
+(main)&gt;     &quot;#{row} #{column}&quot;
+(main)&gt;   end
+(main)&gt; end
+=&gt; [[&quot;0 0&quot;, &quot;0 1&quot;, &quot;0 2&quot;, &quot;0 3&quot;],
+    [&quot;1 0&quot;, &quot;1 1&quot;, &quot;1 2&quot;, &quot;1 3&quot;],
+    [&quot;2 0&quot;, &quot;2 1&quot;, &quot;2 2&quot;, &quot;2 3&quot;],
+    [&quot;3 0&quot;, &quot;3 1&quot;, &quot;3 2&quot;, &quot;3 3&quot;]]
+</code></pre><p>Notice that we have an array of arrays. We could work with the structure that way, but it&#39;ll be a little easier if we <code>flatten</code> it out:</p>
+<pre><code>(main)&gt; 4.times.map do |row|
+(main)&gt;   4.times.map do |column|
+(main)&gt;     &quot;#{row} #{column}&quot;
+(main)&gt;   end
+(main)&gt; end.flatten
+=&gt; [&quot;0 0&quot;, &quot;0 1&quot;, &quot;0 2&quot;, &quot;0 3&quot;,
+    &quot;1 0&quot;, &quot;1 1&quot;, &quot;1 2&quot;, &quot;1 3&quot;,
+    &quot;2 0&quot;, &quot;2 1&quot;, &quot;2 2&quot;, &quot;2 3&quot;,
+    &quot;3 0&quot;, &quot;3 1&quot;, &quot;3 2&quot;, &quot;3 3&quot;]
+</code></pre><p>Perfect!</p>
+<p>Run <code>rake</code> again, and you should see the following screen:</p>
+<p class="image iphone">
+  <img src="https://dl.dropbox.com/s/6pfn2njsriujnmz/grid_blank.png" alt="">
+</p>
+
+<p>Before we move on, let&#39;s do a little bit of cleanup. You might have noticed a couple magic numbers above (64 and 128). Our tiles are 64x64, so the <code>row * 64</code> and <code>column * 64</code> is probably referring to the size of each tile. Let&#39;s add a constant called <code>TILE_SIZE</code> and set it to <code>64</code>.</p>
+<p>Similarly, the 64 and 128 that we&#39;re adding represent the distance from the left and bottom of the screen, so let&#39;s call those <code>LEFT_GUTTER</code> and <code>BOTTOM_GUTTER</code>.</p>
+<pre><code># grid_layer.rb
+class GridLayer &lt; Joybox::Core::Layer
+
+  TILE_SIZE = 64
+  LEFT_GUTTER = 64
+  BOTTOM_GUTTER = 128
+
+  def load_tiles
+    @tiles = 4.times.map do |row|
+      4.times.map do |column|
+        Sprite.new frame_name: &#39;hidden.png&#39;, position: [
+          column * TILE_SIZE + LEFT_GUTTER,
+          row * TILE_SIZE + BOTTOM_GUTTER
+        ]
+      end
+    end.flatten
+
+    @tiles.each { |t| @sprite_batch &lt;&lt; t }
+  end
+end
+</code></pre><p>Run <code>rake</code> one more time to make sure we didn&#39;t break anything. If it looks good, let&#39;s make our Tiles a little more interesting.</p>
+<h2>Let&#39;s Get Touchy/Feely</h2><p>Right now, our &quot;Tiles&quot; are actually just sprites. Eventually, we want to do things like give each tile a different image, flip tiles between hidden and showing, freeze tiles that have been matched, and so on.</p>
+<p>Let&#39;s go ahead and create a <code>Tile</code> class. It&#39;ll be pretty simple to start, but we&#39;ll build it up as we go. We&#39;ll need to make some changes to <code>GridLayer</code> as well:</p>
+<pre><code># tile.rb
+class Tile &lt; Joybox::Core::Sprite
+  def initialize(opts={})
+    super frame_name: &#39;hidden.png&#39;, position: opts[:position]
+  end
+end
+
+# grid_layer.rb
+def load_tiles
+  @tiles = 4.times.map do |row|
+    4.times.map do |column|
+    Tile.new position: [
+        column * TILE_SIZE + LEFT_GUTTER,
+        row * TILE_SIZE + BOTTOM_GUTTER
+    ]
+    end
+  end.flatten
+
+  @tiles.each { |t| @sprite_batch &lt;&lt; t }
+end
+</code></pre><p>Before we <code>rake</code> again, let&#39;s go ahead and put some basic touch handling in place. Right now, we&#39;ll just print out the location of the touches to make sure it&#39;s working:</p>
+<pre><code># grid_layer.rb
+def on_enter
+  # …
+  handle_touches
+end
+
+def handle_touches
+  on_touches_ended do |touches, event|
+    touch = touches.any_object
+    puts [touch.location.x, touch.location.y].inspect
+  end
+end
+</code></pre><p>In our simple memory game, we don&#39;t need to worry about dragging or multitouch, so we only need to handle the <code>on_touches_ended</code> callback. There are also callbacks for <code>on_touches_began</code>, <code>on_touches_moved</code>, and <code>on_touches_cancelled</code> that you can use for more complex games.</p>
+<p><code>on_touches_ended</code> provides an array of touch objects. If we needed multitouch, we could process all of the objects in this array. Since we only care about single touch, we&#39;ll go ahead and use the <code>touches.any_object</code>.</p>
+<p>Run <code>rake</code> again, and try clicking around on the screen. You should see some x and y positions being logged. If you click and drag, you&#39;ll notice that the event isn&#39;t logged until you release. This is because we&#39;re handling <code>on_touches_ended</code>, which only fires when the tap is completed (like mouseup/keyup events in web programming).</p>
+<p>In order to flip a tile, we&#39;ll need to take these touch location coordinates and figure out which tile was tapped. Let&#39;s go ahead and add that logic now. First, let&#39;s write a method on Tile that tells us whether a given touch location is inside of it. A naive solution would be:</p>
+<pre><code># tile.rb
+def touched?(touch_location)
+  touch_location.x &gt; boundingBox.origin.x &amp;&amp;
+  touch_location.x &lt; (boundingBox.origin.x + boundingBox.size.width) &amp;&amp;
+  touch_location.y &gt; boundingBox.origin.y &amp;&amp;
+  touch_location.y &lt; (boundingBox.origin.y + boundingBox.size.height)
+end
+</code></pre><p>This will work, but it&#39;s a little verbose, and probably not ideal. There&#39;s some built-in Cocos2d concepts (with light Ruby wrapping) we can take advantage of here:</p>
+<pre><code># tile.rb
+def touched?(touch_location)
+  rect = CGRect.new(boundingBox.origin, boundingBox.size)
+  CGRectContainsPoint(rect, touch_location)
+end
+</code></pre><p><code>CGRectContainsPoint</code> is more performant and saves us a bit of code, so we&#39;ll take advantage of it.</p>
+<p>Now we just need to add a call out to <code>touched?</code> in the GridLayer:</p>
+<pre><code># grid_layer.rb
+def handle_touches
+  on_touches_ended do |touches, event|
+    touch = touches.any_object
+    if tile = tile_to_flip(touch.location)
+      puts &#39;flipping!&#39;
+    end
+  end
+end
+
+def tile_to_flip(touch_location)
+  @tiles.detect { |t| t.touched?(touch_location) }
+end
+</code></pre><p>Run <code>rake</code> again and click around. You should be able to tell which tile is about to get flipped.</p>
+<h2>Flip it! Flip it good!</h2><p>All this plumbing is about to pay off for us! Printing console messages is nice, but we&#39;re making a game, so we should have some sweet animations when the tile gets touched!</p>
+<p>But this is just a tutorial, so I didn&#39;t have time to invest in sweet animations. We&#39;re going to use some of the <a href="http://joybox.io/actions/">built-in Joybox animations</a> instead. It won&#39;t be a real flip, but it&#39;ll be good enough to impress at least one our your friends.</p>
+<p>Let&#39;s add a simple <code>flip</code> method to our Tile class and call that instead of printing coordinates in our GridLayer.:</p>
+<pre><code># tile.rb
+def flip
+  run_action Sequence.with(actions: [
+    Scale.to(scale: 1.5, duration: 0.2),
+    Scale.to(scale: 1.0, duration: 0.2)
+  ])
+end
+
+# grid_layer.rb
+def handle_touches
+  # …
+  if tile = tile_to_flip(touch.location)
+    tile.flip
+  end
+end
+</code></pre><p>Run <code>rake</code> and try tapping on your tiles. You should see them scale up to 150% of their size over 0.2 seconds, then shrink back to normal.</p>
+<p class="image iphone">
+  <img src="https://dl.dropbox.com/s/wuembr8migvv5s7/flip_basic.png" alt="">
+</p>
+
+<p>Notice that Scale is absolute, not relative, as in the following example:</p>
+<pre><code># double the original size
+Scale.to(scale: 2.0)
+
+# will end up half of the original size!
+Scale.to(scale: 0.5)
+</code></pre><p>Our flip animation is a start, but we actually need to change the image that&#39;s showing. Memory is boring if everything is a match! Let&#39;s add some TYPES to our Tile class. We&#39;ll just make them correspond to the sprites in our sprite sheet for simplicity:</p>
+<pre><code># tile.rb
+class Tile
+  TYPES = %w(
+    boy gem_blue gem_green gem_orange girl_cat girl_horn
+    girl_pink girl_princess heart key ladybug star
+  )
+end
+</code></pre><p>In case you don&#39;t remember every % construct in Ruby, %w creates an array of strings:</p>
+<pre><code>(main)&gt; %w(foo bar baz)
+=&gt; [&quot;foo&quot;, &quot;bar&quot;, &quot;baz&quot;]
+</code></pre><p>Let&#39;s go ahead and allow a :type parameter to be passed into our Tile constructor:</p>
+<pre><code># tile.rb
+def initialize(opts={})
+  super frame_name: &#39;hidden.png&#39;, position: opts[:position]
+
+  @type = opts[:type]
+end
+</code></pre><p>This will let us figure out which image needs to be drawn when the time comes.</p>
+<p>Next, let&#39;s update our GridLayer to pick 8 pairs of tiles that can be matched (4x4 = 16 = 8 pairs). I&#39;m going to use a bit of Ruby cleverness here, but I think it expresses the solution well.</p>
+<p>First, let&#39;s pick 8 random tile types:</p>
+<pre><code>8.times.map { Tile::TYPES.sample }
+</code></pre><p>In Ruby 1.9+, <code>Array#sample</code> returns a random element from the array. We want to do it 8 times and collect them into a new array, so we use <code>times.map</code>.</p>
+<p>Once we&#39;ve done that, we want to create pairs of tiles:</p>
+<pre><code>types = 8.times.map { Tile::TYPES.sample } * 2
+</code></pre><p>In Ruby, if you multiply an Array by a number <code>n</code>, it creates a new array with each element appearing <code>n</code> times. So:</p>
+<pre><code>(main)&gt; [1,2,3] * 2
+=&gt; [1, 2, 3, 1, 2, 3]
+</code></pre><p>In our case, we&#39;ll end up with something like:</p>
+<pre><code>(main)&gt; types = 8.times.map { Tile::TYPES.sample } * 2
+=&gt; [&quot;star&quot;, &quot;girl_pink&quot;, &quot;star&quot;, &quot;gem_blue&quot;,
+    &quot;star&quot;, &quot;boy&quot;, &quot;key&quot;, &quot;girl_cat&quot;,
+    &quot;star&quot;, &quot;girl_pink&quot;, &quot;star&quot;, &quot;gem_blue&quot;,
+    &quot;star&quot;, &quot;boy&quot;, &quot;key&quot;, &quot;girl_cat&quot;]
+</code></pre><p>(Notice that I grouped them in fours. These correspond directly to the tiles in our game!)</p>
+<p>Let&#39;s make sure we pass a type to each Tile as we construct it. We can use <code>Array#shift</code> to make it easy on ourselves:</p>
+<pre><code># grid_layer.rb
+def load_tiles
+  types = 8.times.map { Tile::TYPES.sample } * 2
+
+  @tiles = 4.times.map do |row|
+    4.times.map do |column|
+      Tile.new type: types.shift, position: [
+        column * TILE_SIZE + LEFT_GUTTER,
+        row * TILE_SIZE + BOTTOM_GUTTER
+      ]
+    end
+  end.flatten
+
+  @tiles.each { |t| @sprite_batch &lt;&lt; t }
+end
+</code></pre><p>The last step here is to use the Tile&#39;s type to change which image is showing during the flip:</p>
+<pre><code># tile.rb
+def flip
+  setDisplayFrame SpriteFrameCache.frames[&quot;#{@type}.png&quot;]
+
+  # our sweet animation
+end
+</code></pre><p>Go ahead and run <code>rake</code> again. We can actually flip our tiles over now!</p>
+<p class="image iphone">
+  <img src="https://dl.dropbox.com/s/t6vpl1agkg9x65h/flip_tiles.png" alt="">
+</p>
+
+<p>Well, that about wraps it up. Now, we&#39;ll just…</p>
+<p>Wait a minute. The tiles stay flipped even when they don&#39;t match. That&#39;s not much of a memory game. Let&#39;s fix that.</p>
+<h2>&quot;Why must you analyze everything with your relentless logic?&quot;</h2><p>We need to add the matching logic in at this point. We need to track up to two <code>active_tiles</code>. Once two tiles are selected, we&#39;ll see if they&#39;re the same type of tile. If so, we want to &quot;freeze&quot; them so they can&#39;t be flipped back over or used in another match. If not, we flip them back over and try again.</p>
+<p>Let&#39;s deal with our Tile first. For starters, let&#39;s add the ability to flip a Tile back over. If the current frame is &quot;hidden.png&quot;, we want to switch it to the Tile&#39;s type. Otherwise, we want to switch it back to &quot;hidden.png&quot;.</p>
+<pre><code># tile.rb
+def flip
+  if isFrameDisplayed(SpriteFrameCache.frames[&quot;hidden.png&quot;])
+    setDisplayFrame(SpriteFrameCache.frames[&quot;#{@type}.png&quot;])
+  else
+    setDisplayFrame(SpriteFrameCache.frames[&quot;hidden.png&quot;])
+  end
+
+  # world&#39;s sexiest animation
+end
+</code></pre><p>Go ahead and <code>rake</code>. You should be able to flip tiles back over now. But boy is that code ugly! Let&#39;s clean it up a little bit with two helper methods:</p>
+<pre><code># tile.rb
+def flip
+  if is_showing?(&quot;hidden.png&quot;)
+    show &quot;#{@type}.png&quot;
+  else
+    show &quot;hidden.png&quot;
+  end  
+end
+
+def show(frame_name)
+  setDisplayFrame SpriteFrameCache.frames[frame_name]
+end
+
+def is_showing?(frame_name)
+  isFrameDisplayed SpriteFrameCache.frames[frame_name]
+end
+</code></pre><p>Much better.</p>
+<p>The logic for tracking active tiles is a bit tricky, so let&#39;s take it step by step. Let&#39;s just add a simple array to our GridLayer:</p>
+<pre><code># grid_layer.rb
+def handle_touches
+  @active_tiles = [] # HERE
+
+  on_touches_ended do |touches, event|
+    touch = touches.any_object
+    if tile = tile_to_flip(touch.location)
+      tile.flip
+    end
+  end
+end
+</code></pre><p>We only want to allow 2 tiles to be flipped at a time, so let&#39;s <code>break</code> if there are already 2 <code>@active_tiles</code>:</p>
+<pre><code># grid_layer.rb
+def handle_touches
+  @active_tiles = []
+
+  on_touches_ended do |touches, event|
+    break if @active_tiles.size == 2 # HERE
+
+    touch = touches.any_object
+    if tile = tile_to_flip(touch.location)
+      tile.flip
+    end
+  end
+end
+</code></pre><p>Next, let&#39;s add the currently selected tile to <code>@active_tiles</code> when it gets flipped:</p>
+<pre><code># grid_layer.rb
+def handle_touches
+  @active_tiles = []
+
+  on_touches_ended do |touches, event|
+    break if @active_tiles.size == 2
+
+    touch = touches.any_object
+    if tile = tile_to_flip(touch.location)
+      tile.flip
+
+      @active_tiles &lt;&lt; tile # HERE
+    end
+  end
+end
+</code></pre><p>If we have 2 <code>@active_tiles</code>, we want to compare them. If they&#39;re the same, they get frozen. If they&#39;re different, they get flipped back over:</p>
+<pre><code># grid_layer.rb
+def handle_touches
+  @active_tiles = []
+
+  on_touches_ended do |touches, event|
+    break if @active_tiles.size == 2
+
+    touch = touches.any_object
+    if tile = tile_to_flip(touch.location)
+      tile.flip
+
+      @active_tiles &lt;&lt; tile
+
+      # HERE
+      if @active_tiles.size == 2
+        # Tiles are the same type -- match!
+        if @active_tiles.map(&amp;:type).uniq.size == 1
+          puts &quot;Freeze&quot;
+        else
+          puts &quot;Flip back&quot;
+        end
+        @active_tiles = []
+      end
+    end
+  end
+end
+</code></pre><p>Add a quick <code>attr_reader :type</code> to your Tile class, then run <code>rake</code>. You should get some feedback on whether two tiles are a match when you tap them.</p>
+<p>Let&#39;s go ahead and hook up the &quot;Freeze&quot; and &quot;Flip back&quot;. It&#39;s pretty simple:</p>
+<pre><code># grid_layer.rb
+def handle_touches
+  @active_tiles = []
+
+  on_touches_ended do |touches, event|
+    break if @active_tiles.size == 2
+
+    touch = touches.any_object
+    if tile = tile_to_flip(touch.location)
+      tile.flip
+
+      @active_tiles &lt;&lt; tile
+
+      if @active_tiles.size == 2
+        if @active_tiles.map(&amp;:type).uniq.size == 1
+          @active_tiles.each(&amp;:freeze) # HERE
+        else
+          @active_tiles.each(&amp;:flip) # AND HERE
+        end
+        @active_tiles = []
+      end
+    end
+  end
+end
+</code></pre><p>Right now, there&#39;s no <code>Tile#freeze</code> method. Let&#39;s take care of that:</p>
+<pre><code># tile.rb
+def freeze
+  @frozen = true
+end
+</code></pre><p>That&#39;s all well and good, but we probably want to do something with that flag. Let&#39;s ignore touches on frozen tiles:</p>
+<pre><code># tile.rb
+def touched?
+  return if @frozen
+
+  # …
+end
+</code></pre><p>If you run <code>rake</code> and click around, you&#39;ll see the behavior is a little strange. If the tiles match, they stay frozen as expected. If they don&#39;t match, though, you don&#39;t even get to see the second tile! That&#39;s not a very fun game, and definitely doesn&#39;t improve your memory. To fix it, we&#39;ll need to add a short delay before we freeze or flip the tiles. We can do that using the Joybox actions <code>Delay</code> and <code>Callback</code>. Our <code>handle_touches</code> function is getting a little long anyway, so let&#39;s split the logic for freezing and flipping out into its own callback function:</p>
+<pre><code># grid_layer.rb
+# grid_layer.rb
+def handle_touches
+  @active_tiles = []
+
+  on_touches_ended do |touches, event|
+    break if @active_tiles.size == 2
+
+    touch = touches.any_object
+    if tile = tile_to_flip(touch.location)
+      tile.flip
+
+      @active_tiles &lt;&lt; tile
+
+      if @active_tiles.size == 2
+        self.runAction Sequence.with(actions: [
+          Delay.time(by: 1),
+          Callback.with(&amp;handle_active_tiles)
+        ])
+      end
+    end
+  end
+end
+
+def handle_active_tiles
+  Proc.new do
+    if @active_tiles.map { |t| t.type }.uniq.size == 1
+      @active_tiles.each(&amp;:freeze)
+    else
+      @active_tiles.each(&amp;:flip)
+    end
+    @active_tiles = []
+  end
+end
+</code></pre><p>The only real trick here is that <code>Callback.with</code> expects a block, so we need <code>handle_active_tiles</code> (our callback function) to return a Proc object. We then use <code>&amp;</code> to pass that Proc in the block position instead of as an argument to the <code>Callback.with</code> function. If that&#39;s too confusing, feel free to use <code>Callback.with</code> more naturally:</p>
+<pre><code># alternative to above
+Callback.with do
+  if @active_tiles.map { |t| t.type }.uniq.size == 1
+    @active_tiles.each(&amp;:freeze)
+  else
+    @active_tiles.each(&amp;:flip)
+  end
+  @active_tiles = []
+end
+</code></pre><p>Take a deep breath, run <code>rake</code> again, and play your game. If everything went well, matched tiles should stay matched, unmatched tiles should get flipped back over, and you should be limited to two selections at a time -- just like you would expect!</p>
+<h2>#Winning</h2><p>Your game is completely playable except for one thing: it doesn&#39;t tell you when you win. That&#39;s pretty lame, so let&#39;s add a win screen. It won&#39;t take long, then you can make all your friends relive their childhoods by playing your awesome memory game.</p>
+<p>We&#39;ll need a new Scene (and Layer) to represent winning the game. It&#39;s going to be really simple: just the words &quot;You Win!&quot; in big letters in the middle of the screen. It&#39;s been a while since we&#39;ve created a Layer, but it&#39;s pretty straightforward:</p>
+<pre><code># app/win_layer.rb
+class WinLayer &lt; Joybox::Core::Layer
+  scene
+
+  def on_enter
+    title = Label.new text: &quot;You Win!&quot;, font_size: 48,
+    position: [Screen.half_width, Screen.half_height + 50]
+    self &lt;&lt; title
+  end
+end
+</code></pre><p>We&#39;ll also need to identify the victory condition so we can display this Scene. In our case, the victory condition occurs when all tiles are frozen. We can check for that after we freeze any given pair of tiles. We&#39;ll also add a helper function to make it read a little more naturally:</p>
+<pre><code># grid_layer.rb
+def handle_active_tiles
+  Proc.new do
+    if @active_tiles.map { |t| t.type }.uniq.size == 1
+      @active_tiles.each(&amp;:freeze)
+      if all_matched?
+        Joybox.director.replace_scene WinLayer.scene
+      end
+    else
+      @active_tiles.each(&amp;:flip)
+    end
+    @active_tiles = []
+  end
+end
+
+def all_matched?
+  @tiles.all?(&amp;:frozen)
+end
+</code></pre><p>Add an <code>attr_reader :frozen</code> to your Tile class, then give it a <code>rake</code>. Play through your game until you win, then enjoy your victory:</p>
+<p class="image iphone">
+  <img src="https://dl.dropbox.com/s/913141kopkxwxa2/you_win.png" alt="">
+</p>
+
+<p>Yes, you certainly do.</p>
+<h2>Wrapping up</h2><p>I hope you&#39;ve enjoyed this whirlwind tour through Joybox. There&#39;s obviously lots more inside, and many more kinds of games you can make. I just made a handful of grid-based games and thought I&#39;d share some of the stumbling blocks I ran across, as well as some of the ways to handle game logic as your game becomes more advanced.</p>
+<p>There are many ways you could grow this tutorial: adding more rows/columns, keeping track of the number of moves, adding a timer, and so on. Feel free to share your hacks and extensions back to the <a href="(https://groups.google.com/forum/#!forum/joybox-wrapper">Joybox Google Group</a> or to me directly.</p>
+<p>I&#39;m looking forward to seeing some cool games built with Joybox. Happy coding!</p>
+<p>You can find me on <a href="https://twitter.com/kyleashipley">Twitter</a> if you have any feedback.</p></div></div><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-43659103-1', 'kyleshipley.com');
+ga('send', 'pageview');
+</script><script>// Possibly hyper-aggressive Ruby highlighting.
+var codeBlocks = document.getElementsByTagName("code");
+for (var i = 0; i < codeBlocks.length; i++) {
+  var block = codeBlocks[i];
+  if (block.textContent.match(/def\b|\.rb|@\w*\b|\(main\)|\bend\b|[A-Z]\w*\.new/)) {
+    block.className += "language-ruby";
+  }
+};
+Prism.highlightAll();</script></body></html>
